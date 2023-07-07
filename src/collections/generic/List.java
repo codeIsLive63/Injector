@@ -19,7 +19,12 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
 
     @SuppressWarnings("unchecked")
     public List(Iterable<T> collection) {
+        if (collection == null) {
+            throw new IllegalArgumentException("Коллекция не должна быть пустой");
+        }
+
         _count = 0;
+
         for (T ignored : collection) {
             _count++;
         }
@@ -37,6 +42,39 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
             _items[index] = item;
             index++;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List(IEnumerable<T> collection) {
+        if (collection == null) {
+            throw new IllegalArgumentException("Коллекция не должна быть пустой");
+        }
+
+        _count = 0;
+
+        for (T ignored : collection) {
+            _count++;
+        }
+
+        if (_count == 0) {
+            _items = (T[]) new Object[0];
+            return;
+        }
+
+        _items = (T[]) new Object[_count];
+
+        int index = 0;
+
+        for (T item : collection) {
+            _items[index] = item;
+            index++;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List() {
+        _items = (T[]) new Object[]{ };
+        _count = 0;
     }
 
     @Override
@@ -70,9 +108,11 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
 
     @Override
     public boolean contains(T item) {
-        for (int i = 0; i < _count; i++)
-            if(_items[i].equals(item))
+        for (int i = 0; i < _count; i++) {
+            if(_items[i].equals(item)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -81,31 +121,36 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
     public void remove(T item) {
         int index = indexOf(item);
 
-        if(index >= 0)
+        if (index >= 0) {
             removeAt(index);
+        }
     }
 
     @Override
     public T get(int index) {
-        if (index < 0 || index >= _count)
+        if (index < 0 || index >= _count) {
             throw new IndexOutOfBoundsException("Индекс находится вне диапазона");
+        }
 
         return _items[index];
     }
 
     @Override
     public void set(int index, T item) {
-        if(index < 0 || index >= _count)
+        if(index < 0 || index >= _count) {
             throw new IndexOutOfBoundsException("Индекс находится вне диапазона");
+        }
 
         _items[index] = item;
     }
 
     @Override
     public int indexOf(T item) {
-        for (int i = 0; i < _count; i++)
-            if(_items[i].equals(item))
+        for (int i = 0; i < _count; i++) {
+            if(_items[i].equals(item)) {
                 return i;
+            }
+        }
 
         return -1;
     }
