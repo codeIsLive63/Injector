@@ -1,6 +1,25 @@
 package collections.generic;
 
+import java.util.Iterator;
+
 public interface IEnumerator<T> {
-    boolean hasNext();
-    T next();
+    boolean moveNext();
+
+    T getCurrent();
+
+    void reset();
+
+    default Iterator<T> asIterator() {
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return moveNext();
+            }
+
+            @Override
+            public T next() {
+                return getCurrent();
+            }
+        };
+    }
 }

@@ -1,7 +1,7 @@
 package collections.generic;
 
 public interface ICollection<T> extends IEnumerable<T> {
-    int size();
+    int count();
 
     void add(T item);
 
