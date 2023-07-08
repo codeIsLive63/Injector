@@ -8,7 +8,7 @@ public class Main {
         list.add(2);
         list.add(3);
 
-        list.forEach(System.out::print);
+        list.forEach(System.out::println);
 
         for (Integer integer : list) {
             System.out.println(integer);
