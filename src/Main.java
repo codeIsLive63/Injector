@@ -13,11 +13,13 @@ public class Main {
                 new Person("Alex", 34)
         });
 
-        for (String personName : JEnumerable.from(personList)
-                .where(p -> p.getName().startsWith("A"))
-                .select(Person::getName)) {
-            System.out.println(personName);
-        }
+
+        var result = JEnumerable.from(personList)
+                        .where(p -> p.getName().equals("Alex"))
+                        .select(Person::getAge)
+                        .toArray();
+
+        System.out.println(result[0]);
     }
 }
 
