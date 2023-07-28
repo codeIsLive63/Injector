@@ -15,7 +15,6 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
 
     private int _count;
 
-
     /**
      * Создает пустой список.
      */
@@ -31,7 +30,8 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
      * @param collection Массив элементов для инициализации списка.
      * @throws IllegalArgumentException Если входной массив пуст.
      */
-    public List(T[] collection) {
+    @SafeVarargs
+    public List(T... collection) {
         if (collection == null) {
             throw new IllegalArgumentException("Входной массив пуст.");
         }
