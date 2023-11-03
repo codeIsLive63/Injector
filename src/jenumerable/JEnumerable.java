@@ -196,6 +196,12 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 		return count;
 	}
 
+	/**
+	 * Создает новую последовательность, содержащую первые N элементов из текущей последовательности.
+	 *
+	 * @param count Количество элементов для выбора из текущей последовательности.
+	 * @return Новая последовательность, содержащая первые N элементов из текущей последовательности.
+	 */
 	public JEnumerable<TSource> take(int count) {
 		return new JEnumerable<>(new TakeIterator<>(_enumerator, count));
 	}
@@ -606,12 +612,23 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 		}
 	}
 
+	/**
+	 * Класс, представляющий итератор для операции Take в JEnumerable.
+	 *
+	 * @param <TSource> 	Тип элементов в итераторе.
+	 */
 	private static class TakeIterator<TSource> implements IEnumerator<TSource> {
 
 		private final IEnumerator<TSource> _enumerator;
 		private final int _count;
 		private int _currentIndex;
 
+		/**
+		 * Создает новый итератор TakeIterator.
+		 *
+		 * @param enumerator Итератор исходной последовательности.
+		 * @param count      Количество элементов, которые нужно выбрать.
+		 */
 		public TakeIterator(IEnumerator<TSource> enumerator, int count) {
 			_enumerator = enumerator;
 			_count = count;
