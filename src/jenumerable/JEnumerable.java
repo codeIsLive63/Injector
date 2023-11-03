@@ -8,6 +8,7 @@ import delegates.generic.Func;
 import delegates.generic.Predicate;
 
 import java.lang.reflect.Array;
+import java.util.NoSuchElementException;
 
 /**
  * Класс JEnumerable предоставляет возможности LINQ-подобных запросов для коллекций.
@@ -160,6 +161,43 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 	 */
 	public JEnumerable<TSource> where(BiFunc<TSource, Integer, Boolean> predicate) {
 		return new JEnumerable<>(new WhereIterator<>(_enumerator, predicate));
+	}
+
+	/**
+	 * Подсчитывает общее количество элементов в последовательности.
+	 *
+	 * @return Количество элементов в последовательности.
+	 */
+	public int count() {
+		int count = 0;
+
+		for (TSource item : this) {
+			count++;
+		}
+
+		return count;
+	}
+
+	/**
+	 * Подсчитывает количество элементов в последовательности, которые удовлетворяют заданному условию.
+	 *
+	 * @param predicate Функция-предикат, которая определяет условие для подсчета элементов.
+	 * @return Количество элементов, удовлетворяющих заданному условию.
+	 */
+	public int count(Func<TSource, Boolean> predicate) {
+		int count = 0;
+
+		for (TSource item : this) {
+			if (predicate.apply(item)) {
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	public JEnumerable<TSource> take(int count) {
+		return new JEnumerable<>(new TakeIterator<>(_enumerator, count));
 	}
 
 	/**
@@ -565,6 +603,44 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 			_currentEnumerator = null;
 			_currentCollectionEnumerator = null;
 			_index = -1;
+		}
+	}
+
+	private static class TakeIterator<TSource> implements IEnumerator<TSource> {
+
+		private final IEnumerator<TSource> _enumerator;
+		private final int _count;
+		private int _currentIndex;
+
+		public TakeIterator(IEnumerator<TSource> enumerator, int count) {
+			_enumerator = enumerator;
+			_count = count;
+			_currentIndex = -1;
+		}
+
+		@Override
+		public boolean moveNext() {
+			if (_currentIndex < _count - 1 && _enumerator.moveNext()) {
+				_currentIndex++;
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public TSource getCurrent() {
+			if (_currentIndex >= 0 && _currentIndex < _count) {
+				return _enumerator.getCurrent();
+			}
+
+			throw new NoSuchElementException("No more elements");
+		}
+
+		@Override
+		public void reset() {
+			_enumerator.reset();
+			_currentIndex = -1;
 		}
 	}
 }
