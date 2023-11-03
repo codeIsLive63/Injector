@@ -68,6 +68,10 @@ public class Main {
                         }
                 )
                 .forEach(System.out::print);
+
+        // Пример использования count и take
+        System.out.println(JEnumerable.from(peoples).count(p -> p.getAge() <= 20));
+        JEnumerable.from(peoples).take(2).forEach(x -> System.out.println(x.getName()));
     }
 }
 
