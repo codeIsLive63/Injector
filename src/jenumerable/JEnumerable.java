@@ -9,6 +9,10 @@ import delegates.generic.Predicate;
 
 import java.lang.reflect.Array;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Класс JEnumerable предоставляет возможности LINQ-подобных запросов для коллекций.
@@ -237,6 +241,30 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 		}
 
 		return (TSource[]) new Object[] { };
+	}
+
+	/**
+	 * Преобразует коллекцию JEnumerable в последовательный поток элементов.
+	 *
+	 * @return Последовательный поток элементов коллекции.
+	 */
+	public Stream<TSource> asStream() {
+		return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(_enumerator.asIterator(), Spliterator.ORDERED),
+				false
+		);
+	}
+
+	/**
+	 * Преобразует коллекцию JEnumerable в параллельный поток элементов.
+	 *
+	 * @return Параллельный поток элементов коллекции.
+	 */
+	public Stream<TSource> asParallelStream() {
+		return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(_enumerator.asIterator(), Spliterator.ORDERED),
+				true
+		);
 	}
 
 	@Override

@@ -1,6 +1,10 @@
 package collections.generic;
 
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -253,6 +257,30 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
 
         _items = newItems;
         _count--;
+    }
+
+    /**
+     * Преобразует коллекцию List в последовательный поток элементов.
+     *
+     * @return Последовательный поток элементов коллекции.
+     */
+    public Stream<T> asStream() {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(getEnumerator().asIterator(), Spliterator.ORDERED),
+                false
+        );
+    }
+
+    /**
+     * Преобразует коллекцию List в параллельный поток элементов.
+     *
+     * @return Параллельный поток элементов коллекции.
+     */
+    public Stream<T> asParallelStream() {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(getEnumerator().asIterator(), Spliterator.ORDERED),
+                true
+        );
     }
 
     /**
