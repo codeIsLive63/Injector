@@ -43,7 +43,8 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 	 * @param collection Массив, из которого создается JEnumerable.
 	 * @return Новый экземпляр JEnumerable с элементами входного массива.
 	 */
-	public static <TCollection> JEnumerable<TCollection> from(TCollection[] collection) {
+	@SafeVarargs
+	public static <TCollection> JEnumerable<TCollection> from(TCollection... collection) {
 		return new JEnumerable<>(new List<>(collection).getEnumerator());
 	}
 
@@ -171,7 +172,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 	public int count() {
 		int count = 0;
 
-		for (TSource item : this) {
+		while (_enumerator.moveNext()) {
 			count++;
 		}
 
@@ -187,8 +188,8 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 	public int count(Func<TSource, Boolean> predicate) {
 		int count = 0;
 
-		for (TSource item : this) {
-			if (predicate.apply(item)) {
+		while (_enumerator.moveNext()) {
+			if (predicate.apply(_enumerator.getCurrent())) {
 				count++;
 			}
 		}
@@ -196,12 +197,6 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 		return count;
 	}
 
-	/**
-	 * Создает новую последовательность, содержащую первые N элементов из текущей последовательности.
-	 *
-	 * @param count Количество элементов для выбора из текущей последовательности.
-	 * @return Новая последовательность, содержащая первые N элементов из текущей последовательности.
-	 */
 	public JEnumerable<TSource> take(int count) {
 		return new JEnumerable<>(new TakeIterator<>(_enumerator, count));
 	}
@@ -228,14 +223,20 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 	 */
 	@SuppressWarnings("unchecked")
 	public TSource[] toArray() {
-		List<TSource> list = toList();
-		TSource[] array = (TSource[]) Array.newInstance(list.get(0).getClass(), list.count());
+		if (_enumerator.moveNext()) {
+			TSource[] array = (TSource[]) Array.newInstance(_enumerator.getCurrent().getClass(), count());
 
-		for (int i = 0; i < list.count(); i++) {
-			array[i] = list.get(i);
+			int index = 0;
+
+			_enumerator.reset();
+			while (_enumerator.moveNext()) {
+				array[index++] = _enumerator.getCurrent();
+			}
+
+			return array;
 		}
 
-		return array;
+		return (TSource[]) new Object[] { };
 	}
 
 	@Override
@@ -297,8 +298,10 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 						_current = _selector.apply(_enumerator.getCurrent());
 					}
 				}
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -368,6 +371,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 					return true;
 				}
 			}
+
 			return false;
 		}
 
@@ -419,6 +423,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -472,6 +477,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -532,6 +538,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -595,6 +602,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
@@ -611,6 +619,7 @@ public class JEnumerable<TSource> implements IEnumerable<TSource> {
 			_index = -1;
 		}
 	}
+
 
 	/**
 	 * Класс, представляющий итератор для операции Take в JEnumerable.
