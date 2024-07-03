@@ -4,7 +4,7 @@ package collections.generic;
  * Интерфейс, представляющий набор списков, позволяющий обращаться к элементам по индексу и поддерживающий операции модификации.
  * @param <T> Тип элементов в списке.
  */
-public interface IList<T> extends ICollection<T>, IEnumerable<T> {
+public interface ModifiableList<T> extends Collection<T>, Enumerable<T> {
 
     /**
      * Получает элемент по указанному индексу в списке.

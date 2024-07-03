@@ -6,7 +6,7 @@ package collections.generic;
  *
  * @param <T> Тип элементов в коллекции.
  */
-public interface ICollection<T> extends IEnumerable<T> {
+public interface Collection<T> extends Enumerable<T> {
 
     /**
      * Получает количество элементов в коллекции.

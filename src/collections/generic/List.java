@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
  *
  * @param <T> Тип элементов, хранящихся в списке.
  */
-public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
+public class List<T> implements ModifiableList<T>, Collection<T>, Enumerable<T> {
 
     private T[] _items;
 
@@ -84,7 +84,7 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
      * @throws IllegalArgumentException Если входная коллекция пуста.
      */
     @SuppressWarnings("unchecked")
-    public List(IEnumerable<T> collection) {
+    public List(Enumerable<T> collection) {
         if (collection == null) {
             throw new IllegalArgumentException("Входная коллекция пуста.");
         }
@@ -116,7 +116,7 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
      * @return Перечислитель типа T.
      */
     @Override
-    public IEnumerator<T> getEnumerator() {
+    public Enumerator<T> getEnumerator() {
         return new ListEnumerator();
     }
 
@@ -286,7 +286,7 @@ public class List<T> implements IList<T>, ICollection<T>, IEnumerable<T> {
     /**
      * Внутренний класс, который реализует интерфейс IEnumerator для перебора элементов списка.
      */
-    private class ListEnumerator implements IEnumerator<T> {
+    private class ListEnumerator implements Enumerator<T> {
 
         private int _currentIndex;
 

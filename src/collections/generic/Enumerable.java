@@ -9,14 +9,14 @@ import java.util.Iterator;
  *
  * @param <T> Тип элементов в коллекции.
  */
-public interface IEnumerable<T> extends Iterable<T> {
+public interface Enumerable<T> extends Iterable<T> {
 
     /**
      * Возвращает перечислитель элементов коллекции.
      *
-     * @return {@link IEnumerator}, который можно использовать для перебора элементов.
+     * @return {@link Enumerator}, который можно использовать для перебора элементов.
      */
-    IEnumerator<T> getEnumerator();
+    Enumerator<T> getEnumerator();
 
     /**
      * Возвращает итератор по элементам коллекции. Этот метод предназначен для поддержки

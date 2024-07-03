@@ -2,20 +2,21 @@ import collections.generic.List;
 import jenumerable.JEnumerable;
 
 public class Main {
+
     public static void main(String[] args) {
         //Многомерный список для примера №1
         List<List<List<Integer>>> nestedList = new List<>() {{
-           add(new List<>(){{
-               add(new List<>(1, 2, 3, 4));
-           }});
+            add(new List<>() {{
+                add(new List<>(1, 2, 3, 4));
+            }});
 
-           add(new List<>(){{
-               add(new List<>(5, 6, 7));
-           }});
+            add(new List<>() {{
+                add(new List<>(5, 6, 7));
+            }});
 
-           add(new List<>() {{
-               add(new List<>(8, 9, 10));
-           }});
+            add(new List<>() {{
+                add(new List<>(8, 9, 10));
+            }});
         }};
 
         //Пример №1. Для уменьшения размерности коллекции и объединения всех элементов в 1 список
@@ -40,7 +41,8 @@ public class Main {
 
         //Пример №3. Для объединения всех элементов в один список, включая индекс элемента
         JEnumerable.from(peoples)
-                .selectMany((person, index) -> new List<>("Имя чела №" + ++index + ": " + person.getName() + ", Возраст " + person.getAge()))
+                .selectMany((person, index) -> new List<>(
+                        "Имя чела №" + ++index + ": " + person.getName() + ", Возраст " + person.getAge()))
                 .forEach(System.out::println);
 
         System.out.println();
@@ -49,14 +51,17 @@ public class Main {
         JEnumerable.from(peoples)
                 .selectMany(
                         Person::getFavoriteLanguages,
-                        (people, favLang) -> "Любимый язык программирования " + people.getName() + " - " + favLang
+                        (people, favLang) -> "Любимый язык программирования " + people.getName() + " - "
+                                + favLang
                 )
                 .forEach(System.out::println);
 
         //Пример №5. Комбинация примеров № 3, 4
         JEnumerable.from(peoples)
                 .selectMany(
-                        (person, index) -> new List<>("\nИмя чела №" + ++index + ": " + person.getName() + ", Возраст " + person.getAge() + "\n"),
+                        (person, index) -> new List<>(
+                                "\nИмя чела №" + ++index + ": " + person.getName() + ", Возраст " + person.getAge()
+                                        + "\n"),
                         (person, indexedFavLang) -> {
                             StringBuilder values = new StringBuilder(indexedFavLang);
 
@@ -77,6 +82,7 @@ public class Main {
 
 //Класс для экспериментов :)
 class Person {
+
     private final String _name;
     private final int _age;
     private final List<String> _favoriteLanguages;

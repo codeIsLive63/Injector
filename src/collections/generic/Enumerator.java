@@ -7,7 +7,7 @@ import java.util.Iterator;
  *
  * @param <T> Тип элементов в перечислителе.
  */
-public interface IEnumerator<T> {
+public interface Enumerator<T> {
 
     /**
      * Перемещает перечислитель к следующему элементу коллекции.
