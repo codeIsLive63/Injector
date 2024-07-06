@@ -2,9 +2,10 @@ package collections.generic;
 
 /**
  * Интерфейс, представляющий набор списков, позволяющий обращаться к элементам по индексу и поддерживающий операции модификации.
+ *
  * @param <T> Тип элементов в списке.
  */
-public interface ModifiableList<T> extends Collection<T>, Enumerable<T> {
+public interface ModifiableList<T> extends Collection<T> {
 
     /**
      * Получает элемент по указанному индексу в списке.
@@ -19,7 +20,7 @@ public interface ModifiableList<T> extends Collection<T>, Enumerable<T> {
      * Устанавливает элемент с указанным индексом в списке на заданный элемент.
      *
      * @param index Индекс, по которому должен быть установлен элемент.
-     * @param item Элемент, который должен быть установлен по указанному индексу.
+     * @param item  Элемент, который должен быть установлен по указанному индексу.
      * @throws IndexOutOfBoundsException Если индекс выходит за пределы допустимого диапазона.
      */
     void set(int index, T item);

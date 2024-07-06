@@ -22,10 +22,10 @@ import java.util.stream.StreamSupport;
  */
 public class JEnumerable<TSource> implements Enumerable<TSource> {
 
-    private final Enumerator<TSource> _enumerator;
+    private final Enumerator<TSource> enumerator;
 
     private JEnumerable(Enumerator<TSource> enumerator) {
-        _enumerator = enumerator;
+        this.enumerator = enumerator;
     }
 
     /**
@@ -72,7 +72,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий преобразованные элементы.
      */
     public <TResult> JEnumerable<TResult> select(Func<TSource, TResult> selector) {
-        return new JEnumerable<>(new SelectIterator<>(_enumerator, selector));
+        return new JEnumerable<>(new SelectIterator<>(enumerator, selector));
     }
 
     /**
@@ -84,7 +84,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий преобразованные элементы.
      */
     public <TResult> JEnumerable<TResult> select(BiFunc<TSource, Integer, TResult> selector) {
-        return new JEnumerable<>(new SelectIterator<>(_enumerator, selector));
+        return new JEnumerable<>(new SelectIterator<>(enumerator, selector));
     }
 
     /**
@@ -97,7 +97,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий элементы из проекций с использованием селектора.
      */
     public <TResult> JEnumerable<TResult> selectMany(Func<TSource, Enumerable<TResult>> selector) {
-        return new JEnumerable<>(new SelectManyIterator<>(_enumerator, selector));
+        return new JEnumerable<>(new SelectManyIterator<>(enumerator, selector));
     }
 
     /**
@@ -110,7 +110,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий элементы из проекций с использованием селектора и индекса.
      */
     public <TResult> JEnumerable<TResult> selectMany(BiFunc<TSource, Integer, Enumerable<TResult>> selector) {
-        return new JEnumerable<>(new SelectManyIndexedIterator<>(_enumerator, selector));
+        return new JEnumerable<>(new SelectManyIndexedIterator<>(enumerator, selector));
     }
 
     /**
@@ -127,7 +127,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий элементы из проекций с использованием селекторов.
      */
     public <TCollection, TResult> JEnumerable<TResult> selectMany(Func<TSource, Enumerable<TCollection>> collectionSelector, BiFunc<TSource, TCollection, TResult> resultSelector) {
-        return new JEnumerable<>(new SelectManyResultIterator<>(_enumerator, collectionSelector, resultSelector));
+        return new JEnumerable<>(new SelectManyResultIterator<>(enumerator, collectionSelector, resultSelector));
     }
 
     /**
@@ -144,7 +144,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий элементы из проекций с использованием селекторов и индекса.
      */
     public <TCollection, TResult> JEnumerable<TResult> selectMany(BiFunc<TSource, Integer, Enumerable<TCollection>> collectionSelector, BiFunc<TSource, TCollection, TResult> resultSelector) {
-        return new JEnumerable<>(new SelectManyIndexedResultIterator<>(_enumerator, collectionSelector, resultSelector));
+        return new JEnumerable<>(new SelectManyIndexedResultIterator<>(enumerator, collectionSelector, resultSelector));
     }
 
     /**
@@ -155,7 +155,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий отфильтрованные элементы.
      */
     public JEnumerable<TSource> where(Predicate<TSource> predicate) {
-        return new JEnumerable<>(new WhereIterator<>(_enumerator, predicate));
+        return new JEnumerable<>(new WhereIterator<>(enumerator, predicate));
     }
 
     /**
@@ -167,7 +167,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Новый экземпляр JEnumerable, содержащий отфильтрованные элементы.
      */
     public JEnumerable<TSource> where(BiFunc<TSource, Integer, Boolean> predicate) {
-        return new JEnumerable<>(new WhereIterator<>(_enumerator, predicate));
+        return new JEnumerable<>(new WhereIterator<>(enumerator, predicate));
     }
 
     /**
@@ -178,7 +178,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
     public int count() {
         int count = 0;
 
-        while (_enumerator.moveNext()) {
+        while (enumerator.moveNext()) {
             count++;
         }
 
@@ -194,8 +194,8 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
     public int count(Func<TSource, Boolean> predicate) {
         int count = 0;
 
-        while (_enumerator.moveNext()) {
-            if (predicate.apply(_enumerator.getCurrent())) {
+        while (enumerator.moveNext()) {
+            if (predicate.apply(enumerator.getCurrent())) {
                 count++;
             }
         }
@@ -203,8 +203,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
         return count;
     }
 
+    /**
+     * Возвращает новую коллекцию, содержащую указанное количество элементов из начала текущей последовательности.
+     *
+     * @param count Количество элементов для возврата из начала текущей последовательности.
+     * @return Новый экземпляр JEnumerable, содержащиё первые {@code count} элементов текущей последовательности.
+     */
     public JEnumerable<TSource> take(int count) {
-        return new JEnumerable<>(new TakeIterator<>(_enumerator, count));
+        return new JEnumerable<>(new TakeIterator<>(enumerator, count));
     }
 
     /**
@@ -215,8 +221,8 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
     public List<TSource> toList() {
         List<TSource> resultList = new List<>();
 
-        while (_enumerator.moveNext()) {
-            resultList.add(_enumerator.getCurrent());
+        while (enumerator.moveNext()) {
+            resultList.add(enumerator.getCurrent());
         }
 
         return resultList;
@@ -229,14 +235,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     @SuppressWarnings("unchecked")
     public TSource[] toArray() {
-        if (_enumerator.moveNext()) {
-            TSource[] array = (TSource[]) Array.newInstance(_enumerator.getCurrent().getClass(), count());
+        if (enumerator.moveNext()) {
+            TSource[] array = (TSource[]) Array.newInstance(enumerator.getCurrent().getClass(), count());
 
             int index = 0;
 
-            _enumerator.reset();
-            while (_enumerator.moveNext()) {
-                array[index++] = _enumerator.getCurrent();
+            enumerator.reset();
+            while (enumerator.moveNext()) {
+                array[index++] = enumerator.getCurrent();
             }
 
             return array;
@@ -251,7 +257,7 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Последовательный поток элементов коллекции.
      */
     public Stream<TSource> asStream() {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(_enumerator.asIterator(), Spliterator.ORDERED), false);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(enumerator.asIterator(), Spliterator.ORDERED), false);
     }
 
     /**
@@ -260,12 +266,12 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      * @return Параллельный поток элементов коллекции.
      */
     public Stream<TSource> asParallelStream() {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(_enumerator.asIterator(), Spliterator.ORDERED), true);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(enumerator.asIterator(), Spliterator.ORDERED), true);
     }
 
     @Override
     public Enumerator<TSource> getEnumerator() {
-        return _enumerator;
+        return enumerator;
     }
 
     /**
@@ -277,12 +283,12 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class SelectIterator<TSource, TResult> implements Enumerator<TResult> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final Func<TSource, TResult> _selector;
-        private final BiFunc<TSource, Integer, TResult> _indexedSelector;
+        private final Enumerator<TSource> enumerator;
+        private final Func<TSource, TResult> selector;
+        private final BiFunc<TSource, Integer, TResult> indexedSelector;
 
-        private int _index;
-        private TResult _current;
+        private int index;
+        private TResult current;
 
         /**
          * Инициализирует новый экземпляр класса SelectIterator с помощью лямбда-выражения.
@@ -291,10 +297,10 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          * @param selector   Лямбда-выражение для преобразования каждого элемента.
          */
         private SelectIterator(Enumerator<TSource> enumerator, Func<TSource, TResult> selector) {
-            _enumerator = enumerator;
-            _selector = selector;
-            _indexedSelector = null;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.selector = selector;
+            indexedSelector = null;
+            index = -1;
         }
 
         /**
@@ -305,21 +311,21 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          * @param selector   Лямбда-выражение для преобразования каждого элемента с его индексом.
          */
         private SelectIterator(Enumerator<TSource> enumerator, BiFunc<TSource, Integer, TResult> selector) {
-            _enumerator = enumerator;
-            _selector = null;
-            _indexedSelector = selector;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.selector = null;
+            indexedSelector = selector;
+            index = -1;
         }
 
         @Override
         public boolean moveNext() {
-            if (_enumerator.moveNext()) {
-                _index++;
-                if (_indexedSelector != null) {
-                    _current = _indexedSelector.apply(_enumerator.getCurrent(), _index);
+            if (enumerator.moveNext()) {
+                index++;
+                if (indexedSelector != null) {
+                    current = indexedSelector.apply(enumerator.getCurrent(), index);
                 } else {
-                    if (_selector != null) {
-                        _current = _selector.apply(_enumerator.getCurrent());
+                    if (selector != null) {
+                        current = selector.apply(enumerator.getCurrent());
                     }
                 }
 
@@ -331,14 +337,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TResult getCurrent() {
-            return _current;
+            return current;
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _index = -1;
-            _current = null;
+            enumerator.reset();
+            index = -1;
+            current = null;
         }
     }
 
@@ -350,11 +356,11 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class WhereIterator<TSource> implements Enumerator<TSource> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final Predicate<TSource> _predicate;
-        private final BiFunc<TSource, Integer, Boolean> _indexedPredicate;
-        private TSource _current;
-        private int _index;
+        private final Enumerator<TSource> enumerator;
+        private final Predicate<TSource> predicate;
+        private final BiFunc<TSource, Integer, Boolean> indexedPredicate;
+        private TSource current;
+        private int index;
 
         /**
          * Инициализирует новый экземпляр класса WhereIterator с помощью лямбда-выражения.
@@ -363,10 +369,10 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          * @param predicate  Лямбда-выражение для проверки каждого элемента на наличие условия.
          */
         private WhereIterator(Enumerator<TSource> enumerator, Predicate<TSource> predicate) {
-            _enumerator = enumerator;
-            _predicate = predicate;
-            _indexedPredicate = null;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.predicate = predicate;
+            indexedPredicate = null;
+            index = -1;
         }
 
         /**
@@ -378,20 +384,20 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          *                   для условия.
          */
         private WhereIterator(Enumerator<TSource> enumerator, BiFunc<TSource, Integer, Boolean> predicate) {
-            _enumerator = enumerator;
-            _predicate = null;
-            _indexedPredicate = predicate;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.predicate = null;
+            indexedPredicate = predicate;
+            index = -1;
         }
 
         @Override
         public boolean moveNext() {
-            while (_enumerator.moveNext()) {
-                _index++;
-                _current = _enumerator.getCurrent();
-                if (_predicate != null && _predicate.test(_current)) {
+            while (enumerator.moveNext()) {
+                index++;
+                current = enumerator.getCurrent();
+                if (predicate != null && predicate.test(current)) {
                     return true;
-                } else if (_indexedPredicate != null && _indexedPredicate.apply(_current, _index)) {
+                } else if (indexedPredicate != null && indexedPredicate.apply(current, index)) {
                     return true;
                 }
             }
@@ -401,14 +407,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TSource getCurrent() {
-            return _current;
+            return current;
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _index = -1;
-            _current = null;
+            enumerator.reset();
+            index = -1;
+            current = null;
         }
     }
 
@@ -421,9 +427,9 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class SelectManyIterator<TSource, TResult> implements Enumerator<TResult> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final Func<TSource, Enumerable<TResult>> _selector;
-        private Enumerator<TResult> _currentEnumerator;
+        private final Enumerator<TSource> enumerator;
+        private final Func<TSource, Enumerable<TResult>> selector;
+        private Enumerator<TResult> currentEnumerator;
 
         /**
          * Инициализирует новый экземпляр SelectManyIterator.
@@ -433,16 +439,16 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          *                   и возвращает перечисление элементов типа TResult.
          */
         private SelectManyIterator(Enumerator<TSource> enumerator, Func<TSource, Enumerable<TResult>> selector) {
-            _enumerator = enumerator;
-            _selector = selector;
-            _currentEnumerator = null;
+            this.enumerator = enumerator;
+            this.selector = selector;
+            currentEnumerator = null;
         }
 
         @Override
         public boolean moveNext() {
-            while (_currentEnumerator == null || !_currentEnumerator.moveNext()) {
-                if (_enumerator.moveNext()) {
-                    _currentEnumerator = _selector.apply(_enumerator.getCurrent()).getEnumerator();
+            while (currentEnumerator == null || !currentEnumerator.moveNext()) {
+                if (enumerator.moveNext()) {
+                    currentEnumerator = selector.apply(enumerator.getCurrent()).getEnumerator();
                 } else {
                     return false;
                 }
@@ -453,13 +459,13 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TResult getCurrent() {
-            return _currentEnumerator.getCurrent();
+            return currentEnumerator.getCurrent();
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _currentEnumerator = null;
+            enumerator.reset();
+            currentEnumerator = null;
         }
     }
 
@@ -472,10 +478,10 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class SelectManyIndexedIterator<TSource, TResult> implements Enumerator<TResult> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final BiFunc<TSource, Integer, Enumerable<TResult>> _selector;
-        private Enumerator<TResult> _currentEnumerator;
-        private int _index;
+        private final Enumerator<TSource> enumerator;
+        private final BiFunc<TSource, Integer, Enumerable<TResult>> selector;
+        private Enumerator<TResult> currentEnumerator;
+        private int index;
 
         /**
          * Инициализирует новый экземпляр класса SelectManyIndexedIterator.
@@ -485,18 +491,18 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          *                   и возвращает перечисление элементов типа TResult.
          */
         private SelectManyIndexedIterator(Enumerator<TSource> enumerator, BiFunc<TSource, Integer, Enumerable<TResult>> selector) {
-            _enumerator = enumerator;
-            _selector = selector;
-            _currentEnumerator = null;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.selector = selector;
+            currentEnumerator = null;
+            index = -1;
         }
 
         @Override
         public boolean moveNext() {
-            while (_currentEnumerator == null || !_currentEnumerator.moveNext()) {
-                if (_enumerator.moveNext()) {
-                    _index++;
-                    _currentEnumerator = _selector.apply(_enumerator.getCurrent(), _index).getEnumerator();
+            while (currentEnumerator == null || !currentEnumerator.moveNext()) {
+                if (enumerator.moveNext()) {
+                    index++;
+                    currentEnumerator = selector.apply(enumerator.getCurrent(), index).getEnumerator();
                 } else {
                     return false;
                 }
@@ -507,14 +513,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TResult getCurrent() {
-            return _currentEnumerator.getCurrent();
+            return currentEnumerator.getCurrent();
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _currentEnumerator = null;
-            _index = -1;
+            enumerator.reset();
+            currentEnumerator = null;
+            index = -1;
         }
     }
 
@@ -529,11 +535,11 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class SelectManyResultIterator<TSource, TCollection, TResult> implements Enumerator<TResult> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final Func<TSource, Enumerable<TCollection>> _collectionSelector;
-        private final BiFunc<TSource, TCollection, TResult> _resultSelector;
-        private Enumerator<TSource> _currentEnumerator;
-        private Enumerator<TCollection> _currentCollectionEnumerator;
+        private final Enumerator<TSource> enumerator;
+        private final Func<TSource, Enumerable<TCollection>> collectionSelector;
+        private final BiFunc<TSource, TCollection, TResult> resultSelector;
+        private Enumerator<TSource> currentEnumerator;
+        private Enumerator<TCollection> currentCollectionEnumerator;
 
         /**
          * Инициализирует новый экземпляр класса SelectManyResultIterator.
@@ -545,19 +551,19 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          *                           элемент типа TCollection и возвращает элемент типа TResult.
          */
         private SelectManyResultIterator(Enumerator<TSource> enumerator, Func<TSource, Enumerable<TCollection>> collectionSelector, BiFunc<TSource, TCollection, TResult> resultSelector) {
-            _enumerator = enumerator;
-            _collectionSelector = collectionSelector;
-            _resultSelector = resultSelector;
-            _currentEnumerator = null;
-            _currentCollectionEnumerator = null;
+            this.enumerator = enumerator;
+            this.collectionSelector = collectionSelector;
+            this.resultSelector = resultSelector;
+            currentEnumerator = null;
+            currentCollectionEnumerator = null;
         }
 
         @Override
         public boolean moveNext() {
-            while (_currentEnumerator == null || !_currentCollectionEnumerator.moveNext()) {
-                if (_enumerator.moveNext()) {
-                    _currentEnumerator = _enumerator;
-                    _currentCollectionEnumerator = _collectionSelector.apply(_enumerator.getCurrent()).getEnumerator();
+            while (currentEnumerator == null || !currentCollectionEnumerator.moveNext()) {
+                if (enumerator.moveNext()) {
+                    currentEnumerator = enumerator;
+                    currentCollectionEnumerator = collectionSelector.apply(enumerator.getCurrent()).getEnumerator();
                 } else {
                     return false;
                 }
@@ -568,14 +574,14 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TResult getCurrent() {
-            return _resultSelector.apply(_currentEnumerator.getCurrent(), _currentCollectionEnumerator.getCurrent());
+            return resultSelector.apply(currentEnumerator.getCurrent(), currentCollectionEnumerator.getCurrent());
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _currentEnumerator = null;
-            _currentCollectionEnumerator = null;
+            enumerator.reset();
+            currentEnumerator = null;
+            currentCollectionEnumerator = null;
         }
     }
 
@@ -590,12 +596,12 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class SelectManyIndexedResultIterator<TSource, TCollection, TResult> implements Enumerator<TResult> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final BiFunc<TSource, Integer, Enumerable<TCollection>> _collectionSelector;
-        private final BiFunc<TSource, TCollection, TResult> _resultSelector;
-        private Enumerator<TSource> _currentEnumerator;
-        private Enumerator<TCollection> _currentCollectionEnumerator;
-        private int _index;
+        private final Enumerator<TSource> enumerator;
+        private final BiFunc<TSource, Integer, Enumerable<TCollection>> collectionSelector;
+        private final BiFunc<TSource, TCollection, TResult> resultSelector;
+        private Enumerator<TSource> currentEnumerator;
+        private Enumerator<TCollection> currentCollectionEnumerator;
+        private int index;
 
         /**
          * Инициализирует новый экземпляр класса SelectManyIndexedResultIterator.
@@ -607,21 +613,21 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          *                           элемент типа TCollection и индекс элемента, и возвращает элемент типа TResult.
          */
         private SelectManyIndexedResultIterator(Enumerator<TSource> enumerator, BiFunc<TSource, Integer, Enumerable<TCollection>> collectionSelector, BiFunc<TSource, TCollection, TResult> resultSelector) {
-            _enumerator = enumerator;
-            _collectionSelector = collectionSelector;
-            _resultSelector = resultSelector;
-            _currentEnumerator = null;
-            _currentCollectionEnumerator = null;
-            _index = -1;
+            this.enumerator = enumerator;
+            this.collectionSelector = collectionSelector;
+            this.resultSelector = resultSelector;
+            currentEnumerator = null;
+            currentCollectionEnumerator = null;
+            index = -1;
         }
 
         @Override
         public boolean moveNext() {
-            while (_currentEnumerator == null || !_currentCollectionEnumerator.moveNext()) {
-                if (_enumerator.moveNext()) {
-                    _index++;
-                    _currentEnumerator = _enumerator;
-                    _currentCollectionEnumerator = _collectionSelector.apply(_enumerator.getCurrent(), _index).getEnumerator();
+            while (currentEnumerator == null || !currentCollectionEnumerator.moveNext()) {
+                if (enumerator.moveNext()) {
+                    index++;
+                    currentEnumerator = enumerator;
+                    currentCollectionEnumerator = collectionSelector.apply(enumerator.getCurrent(), index).getEnumerator();
                 } else {
                     return false;
                 }
@@ -632,15 +638,15 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TResult getCurrent() {
-            return _resultSelector.apply(_currentEnumerator.getCurrent(), _currentCollectionEnumerator.getCurrent());
+            return resultSelector.apply(currentEnumerator.getCurrent(), currentCollectionEnumerator.getCurrent());
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _currentEnumerator = null;
-            _currentCollectionEnumerator = null;
-            _index = -1;
+            enumerator.reset();
+            currentEnumerator = null;
+            currentCollectionEnumerator = null;
+            index = -1;
         }
     }
 
@@ -652,9 +658,9 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
      */
     private static class TakeIterator<TSource> implements Enumerator<TSource> {
 
-        private final Enumerator<TSource> _enumerator;
-        private final int _count;
-        private int _currentIndex;
+        private final Enumerator<TSource> enumerator;
+        private final int count;
+        private int currentIndex;
 
         /**
          * Создает новый итератор TakeIterator.
@@ -663,15 +669,15 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
          * @param count      Количество элементов, которые нужно выбрать.
          */
         public TakeIterator(Enumerator<TSource> enumerator, int count) {
-            _enumerator = enumerator;
-            _count = count;
-            _currentIndex = -1;
+            this.enumerator = enumerator;
+            this.count = count;
+            currentIndex = -1;
         }
 
         @Override
         public boolean moveNext() {
-            if (_currentIndex < _count - 1 && _enumerator.moveNext()) {
-                _currentIndex++;
+            if (currentIndex < count - 1 && enumerator.moveNext()) {
+                currentIndex++;
                 return true;
             }
 
@@ -680,17 +686,17 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
 
         @Override
         public TSource getCurrent() {
-            if (_currentIndex >= 0 && _currentIndex < _count) {
-                return _enumerator.getCurrent();
+            if (currentIndex >= 0 && currentIndex < count) {
+                return enumerator.getCurrent();
             }
 
-            throw new NoSuchElementException("No more elements");
+            throw new NoSuchElementException("Больше нету элементов");
         }
 
         @Override
         public void reset() {
-            _enumerator.reset();
-            _currentIndex = -1;
+            enumerator.reset();
+            currentIndex = -1;
         }
     }
 }

@@ -22,7 +22,7 @@ public interface Enumerator<T> {
      *
      * @return Текущий элемент коллекции.
      * @throws java.util.NoSuchElementException Если перечислитель расположен перед первым элементом
-     * коллекции или после последнего элемента.
+     *                                          коллекции или после последнего элемента.
      */
     T getCurrent();
 
