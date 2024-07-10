@@ -284,7 +284,7 @@ public class List<T> implements ModifiableList<T> {
     }
 
     /**
-     * Внутренний класс, который реализует интерфейс Eumerator для перебора элементов списка.
+     * Внутренний класс, который реализует интерфейс Enumerator для перебора элементов списка.
      */
     private class ListEnumerator implements Enumerator<T> {
 
