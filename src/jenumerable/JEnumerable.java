@@ -269,6 +269,22 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(enumerator.asIterator(), Spliterator.ORDERED), true);
     }
 
+    /**
+     * Проверяет, содержит ли коллекция хотя бы один элемент, удовлетворяющий заданному условию.
+     *
+     * @param predicate Лямбда-выражение для проверки каждого элемента.
+     * @return true, если коллекция содержит хотя бы один элемент, удовлетворяющий условию; иначе false.
+     */
+    public boolean any(Predicate<TSource> predicate) {
+        while (enumerator.moveNext()) {
+            if (predicate.test(enumerator.getCurrent())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public Enumerator<TSource> getEnumerator() {
         return enumerator;
@@ -649,7 +665,6 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
             index = -1;
         }
     }
-
 
     /**
      * Класс, представляющий итератор для операции Take в JEnumerable.
