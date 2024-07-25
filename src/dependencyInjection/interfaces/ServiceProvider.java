@@ -5,7 +5,7 @@ import collections.generic.Enumerable;
 /**
  * Интерфейс, представляющий провайдера сервисов для конфигурации зависимостей.
  */
-public interface ServiceProvider {
+public interface ServiceProvider extends AutoCloseable {
 
     /**
      * Получает зарегистрированный сервис указанного типа.
@@ -42,4 +42,11 @@ public interface ServiceProvider {
      * @return Новый экземпляр области для сервисов.
      */
     ServiceScope createScope();
+
+    /**
+     * Закрывает область и освобождает все связанные с ней ресурсы.
+     * Переопределяет метод из интерфейса {@link AutoCloseable}.
+     */
+    @Override
+    void close();
 }

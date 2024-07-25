@@ -22,6 +22,8 @@ public class ServiceCollectionBase implements ServiceCollection {
     private final List<ServiceDescriptor> services = new List<>();
     private Func<ServiceProvider, ServiceScope> scopeFactory;
 
+    private boolean isServiceProviderBuilt = false;
+
     /**
      * Регистрирует transient зависимость.
      *
@@ -31,6 +33,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TAbstract, TImplementation extends TAbstract> ServiceCollection addTransient(Class<TAbstract> abstractType, Class<TImplementation> implementationType) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(abstractType, implementationType, ServiceLifetime.TRANSIENT));
         return this;
     }
@@ -44,6 +47,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addTransient(Class<TService> serviceType, Func<ServiceProvider, TService> implementationFactory) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(serviceType, implementationFactory, ServiceLifetime.TRANSIENT));
         return this;
     }
@@ -56,6 +60,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addTransient(Class<TService> implementationClass) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(implementationClass, implementationClass, ServiceLifetime.TRANSIENT));
         return this;
     }
@@ -69,6 +74,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TAbstract, TImplementation extends TAbstract> ServiceCollection addScoped(Class<TAbstract> abstractType, Class<TImplementation> implementationType) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(abstractType, implementationType, ServiceLifetime.SCOPED));
         return this;
     }
@@ -82,6 +88,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addScoped(Class<TService> serviceType, Func<ServiceProvider, TService> implementationFactory) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(serviceType, implementationFactory, ServiceLifetime.SCOPED));
         return this;
     }
@@ -94,6 +101,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addScoped(Class<TService> implementationClass) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(implementationClass, implementationClass, ServiceLifetime.SCOPED));
         return this;
     }
@@ -107,6 +115,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TAbstract, TImplementation extends TAbstract> ServiceCollection addSingleton(Class<TAbstract> abstractType, Class<TImplementation> implementationType) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(abstractType, implementationType, ServiceLifetime.SINGLETON));
         return this;
     }
@@ -120,6 +129,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addSingleton(Class<TService> serviceType, Func<ServiceProvider, TService> implementationFactory) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(serviceType, implementationFactory, ServiceLifetime.SINGLETON));
         return this;
     }
@@ -132,6 +142,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public <TService> ServiceCollection addSingleton(Class<TService> implementationClass) {
+        ensureServiceProviderNotBuilt();
         services.add(new ServiceDescriptor(implementationClass, implementationClass, ServiceLifetime.SINGLETON));
         return this;
     }
@@ -144,6 +155,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public ServiceCollection setScopeFactory(Func<ServiceProvider, ServiceScope> scopeFactory) {
+        ensureServiceProviderNotBuilt();
         this.scopeFactory = scopeFactory;
         return this;
     }
@@ -155,6 +167,8 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public ServiceProvider buildServiceProvider() {
+        isServiceProviderBuilt = true;
+
         boolean isRequiredScopeFactory = JEnumerable.from(services)
                 .any(serviceDescriptor -> serviceDescriptor.getLifetime() == ServiceLifetime.SCOPED);
 
@@ -186,6 +200,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public void set(int index, ServiceDescriptor item) {
+        ensureServiceProviderNotBuilt();
         services.set(index, item);
     }
 
@@ -208,6 +223,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public void removeAt(int index) {
+        ensureServiceProviderNotBuilt();
         services.removeAt(index);
     }
 
@@ -228,6 +244,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public void add(ServiceDescriptor item) {
+        ensureServiceProviderNotBuilt();
         services.add(item);
     }
 
@@ -237,6 +254,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public void clear() {
+        ensureServiceProviderNotBuilt();
         services.clear();
     }
 
@@ -258,6 +276,7 @@ public class ServiceCollectionBase implements ServiceCollection {
      */
     @Override
     public void remove(ServiceDescriptor item) {
+        ensureServiceProviderNotBuilt();
         services.remove(item);
     }
 
@@ -269,5 +288,11 @@ public class ServiceCollectionBase implements ServiceCollection {
     @Override
     public Enumerator<ServiceDescriptor> getEnumerator() {
         return services.getEnumerator();
+    }
+
+    private void ensureServiceProviderNotBuilt() throws IllegalStateException {
+        if (isServiceProviderBuilt) {
+            throw new IllegalStateException("Нельзя добавлять сервисы после вызова buildServiceProvider().");
+        }
     }
 }

@@ -1,4 +1,4 @@
-package test.java.dependencyInjection;
+package test.java.dependencyInjection.serviceCollectionTests;
 
 import dependencyInjection.implementations.ServiceCollectionBase;
 import dependencyInjection.interfaces.ServiceCollection;
@@ -7,10 +7,12 @@ import dependencyInjection.interfaces.ServiceScope;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import test.java.dependencyInjection.serviceCollectionTests.services.TestService;
+import test.java.dependencyInjection.serviceCollectionTests.services.TestServiceImplementation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ServiceCollectionBaseAddMethodsTest {
+class ServiceCollectionAddMethodsTest {
 
     private ServiceCollection serviceCollection;
 

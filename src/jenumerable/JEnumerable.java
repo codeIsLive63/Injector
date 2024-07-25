@@ -285,6 +285,23 @@ public class JEnumerable<TSource> implements Enumerable<TSource> {
         return false;
     }
 
+    /**
+     * Проверяет, удовлетворяют ли все элементы в последовательности указанному предикату.
+     *
+     * @param predicate Предикат для проверки каждого элемента.
+     * @return true, если все элементы удовлетворяют предикату; иначе false.
+     */
+    public boolean all(Predicate<TSource> predicate) {
+        while (enumerator.moveNext()) {
+            if (!predicate.test(enumerator.getCurrent())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     @Override
     public Enumerator<TSource> getEnumerator() {
         return enumerator;

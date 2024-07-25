@@ -3,9 +3,12 @@ package dependencyInjection.implementations;
 import collections.generic.List;
 import dependencyInjection.ServiceDescriptor;
 import dependencyInjection.ServiceLifetime;
+import dependencyInjection.annotations.Inject;
 import dependencyInjection.interfaces.ServiceProvider;
 import dependencyInjection.interfaces.ServiceScope;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +23,8 @@ public class ServiceScopeBase implements ServiceScope {
     private final ServiceProvider rootProvider;
     private final List<ServiceDescriptor> serviceDescriptors;
     private final Map<Class<?>, Object> scopedInstances = new HashMap<>();
+
+    private boolean isClosed = false;
 
     /**
      * Инициализирует новый экземпляр {@link ServiceScopeBase} с указанным корневым провайдером.
@@ -47,7 +52,16 @@ public class ServiceScopeBase implements ServiceScope {
      */
     @Override
     public void close() {
-        scopedInstances.clear();
+        if (!isClosed) {
+            isClosed = true;
+            scopedInstances.clear();
+        }
+    }
+
+    private void checkIfClosed() {
+        if (isClosed) {
+            throw new IllegalStateException("ServiceScope уже закрыт.");
+        }
     }
 
     /**
@@ -59,6 +73,7 @@ public class ServiceScopeBase implements ServiceScope {
      */
     @SuppressWarnings("unchecked")
     private <TService> TService getOrCreateService(ServiceDescriptor descriptor) {
+        checkIfClosed();
         return (TService) scopedInstances.computeIfAbsent(descriptor.getServiceType(), key -> instantiateService(descriptor));
     }
 
@@ -70,17 +85,72 @@ public class ServiceScopeBase implements ServiceScope {
      */
     private Object instantiateService(ServiceDescriptor descriptor) {
         try {
+            Object instance = null;
+
             if (descriptor.getImplementationInstance() != null) {
-                return descriptor.getImplementationInstance();
+                instance = descriptor.getImplementationInstance();
             } else if (descriptor.getImplementationFactory() != null) {
-                return descriptor.getImplementationFactory().apply(rootProvider);
+                instance = descriptor.getImplementationFactory().apply(rootProvider);
             } else if (descriptor.getImplementationType() != null) {
-                return descriptor.getImplementationType().getDeclaredConstructor().newInstance();
+                for (Constructor<?> constructor : descriptor.getImplementationType().getConstructors()) {
+                    Class<?>[] parameterTypes = constructor.getParameterTypes();
+                    Object[] parameters = new Object[parameterTypes.length];
+                    boolean canInstantiate = true;
+
+                    for (int i = 0; i < parameterTypes.length; i++) {
+                        parameters[i] = rootProvider.getService(parameterTypes[i]);
+                        if (parameters[i] == null) {
+                            canInstantiate = false;
+                            break;
+                        }
+                    }
+
+                    if (canInstantiate) {
+                        instance = constructor.newInstance(parameters);
+                        break;
+                    }
+
+                    throw new IllegalStateException("Не удалось найти подходящий конструктор для " + descriptor.getImplementationType());
+                }
             } else {
                 throw new IllegalStateException("Неверный дескриптор: " + descriptor);
             }
+
+            if (instance != null) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (method.isAnnotationPresent(Inject.class)) {
+                        invokeMethodWithDependencies(instance, method);
+                    }
+                }
+            }
+
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException("Не удалось создать экземпляр сервиса: " + descriptor.getServiceType().getName(), e);
+        }
+    }
+
+    /**
+     * Вызывает метод с внедрением зависимостей.
+     *
+     * @param target Объект, на котором вызывается метод.
+     * @param method Метод, который вызывается.
+     */
+    private void invokeMethodWithDependencies(Object target, Method method) {
+        try {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Object[] parameters = new Object[parameterTypes.length];
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameters[i] = rootProvider.getService(parameterTypes[i]);
+                if (parameters[i] == null) {
+                    throw new IllegalStateException("Не удалось разрешить зависимость для параметра " + parameterTypes[i].getName());
+                }
+            }
+
+            method.invoke(target, parameters);
+        } catch (Exception e) {
+            throw new RuntimeException("Не удалось вызвать метод с зависимостями: " + method.getName(), e);
         }
     }
 
@@ -96,7 +166,7 @@ public class ServiceScopeBase implements ServiceScope {
          * Инициализирует новый экземпляр {@link ScopedServiceProvider} с указанной областью.
          *
          * @param scope               Область, связанная с этим провайдером сервисов.
-         * @param serviceDescriptors Список дескрипторов сервисов.
+         * @param serviceDescriptors  Список дескрипторов сервисов.
          */
         public ScopedServiceProvider(ServiceScopeBase scope, List<ServiceDescriptor> serviceDescriptors) {
             this.scope = scope;
@@ -167,6 +237,11 @@ public class ServiceScopeBase implements ServiceScope {
         @Override
         public ServiceScope createScope() {
             return rootProvider.createScope();
+        }
+
+        @Override
+        public void close() {
+            scope.close();
         }
     }
 }
