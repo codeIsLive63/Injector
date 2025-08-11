@@ -1,6 +1,6 @@
-package test.java.dependencyInjection.serviceCollectionTests.services;
+package codeislive63.test.java.dependencyInjection.serviceCollectionTests.services;
 
-import dependencyInjection.annotations.Inject;
+import codeislive63.dependencyInjection.annotations.Inject;
 
 public class MethodInjectedProcessor {
     private LoggingService loggingService;

@@ -1,12 +1,12 @@
-package dependencyInjection.implementations;
+package codeislive63.dependencyInjection.implementations;
 
 import codeislive63.collections.generic.Enumerable;
 import codeislive63.collections.generic.List;
 import codeislive63.delegates.generic.Func;
-import dependencyInjection.ServiceDescriptor;
-import dependencyInjection.annotations.Inject;
-import dependencyInjection.interfaces.ServiceProvider;
-import dependencyInjection.interfaces.ServiceScope;
+import codeislive63.dependencyInjection.ServiceDescriptor;
+import codeislive63.dependencyInjection.annotations.Inject;
+import codeislive63.dependencyInjection.interfaces.ServiceProvider;
+import codeislive63.dependencyInjection.interfaces.ServiceScope;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

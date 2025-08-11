@@ -1,7 +1,7 @@
-package dependencyInjection;
+package codeislive63.dependencyInjection;
 
 import codeislive63.delegates.generic.Func;
-import dependencyInjection.interfaces.ServiceProvider;
+import codeislive63.dependencyInjection.interfaces.ServiceProvider;
 
 /**
  * Класс, представляющий дескриптор сервиса, используемый для регистрации сервисов

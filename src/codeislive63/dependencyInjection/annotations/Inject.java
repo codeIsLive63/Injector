@@ -1,4 +1,4 @@
-package dependencyInjection.annotations;
+package codeislive63.dependencyInjection.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;

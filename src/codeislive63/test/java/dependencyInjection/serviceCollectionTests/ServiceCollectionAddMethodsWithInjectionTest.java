@@ -1,13 +1,13 @@
-package test.java.dependencyInjection.serviceCollectionTests;
+package codeislive63.test.java.dependencyInjection.serviceCollectionTests;
 
-import dependencyInjection.ServiceLifetime;
-import dependencyInjection.implementations.ServiceCollectionBase;
-import dependencyInjection.interfaces.ServiceCollection;
-import dependencyInjection.interfaces.ServiceProvider;
-import dependencyInjection.interfaces.ServiceScope;
+import codeislive63.dependencyInjection.ServiceLifetime;
+import codeislive63.dependencyInjection.implementations.ServiceCollectionBase;
+import codeislive63.dependencyInjection.interfaces.ServiceCollection;
+import codeislive63.dependencyInjection.interfaces.ServiceProvider;
+import codeislive63.dependencyInjection.interfaces.ServiceScope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import test.java.dependencyInjection.serviceCollectionTests.services.*;
+import codeislive63.test.java.dependencyInjection.serviceCollectionTests.services.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

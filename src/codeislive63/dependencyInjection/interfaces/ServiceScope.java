@@ -1,4 +1,4 @@
-package dependencyInjection.interfaces;
+package codeislive63.dependencyInjection.interfaces;
 
 /**
  * Интерфейс, представляющий область для сервисов.

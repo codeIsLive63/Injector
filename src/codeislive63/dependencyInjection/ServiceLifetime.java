@@ -1,4 +1,4 @@
-package dependencyInjection;
+package codeislive63.dependencyInjection;
 
 /**
  * Перечисление, представляющее время жизни сервиса в контейнере зависимостей.

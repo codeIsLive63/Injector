@@ -1,4 +1,4 @@
-package dependencyInjection.interfaces;
+package codeislive63.dependencyInjection.interfaces;
 
 import codeislive63.collections.generic.Enumerable;
 

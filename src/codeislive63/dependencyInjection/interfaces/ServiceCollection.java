@@ -1,8 +1,8 @@
-package dependencyInjection.interfaces;
+package codeislive63.dependencyInjection.interfaces;
 
 import codeislive63.collections.generic.ModifiableList;
 import codeislive63.delegates.generic.Func;
-import dependencyInjection.ServiceDescriptor;
+import codeislive63.dependencyInjection.ServiceDescriptor;
 
 /**
  * Интерфейс, представляющий коллекцию сервисов для конфигурации зависимостей.
