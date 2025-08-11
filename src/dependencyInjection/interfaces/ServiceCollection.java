@@ -1,7 +1,7 @@
 package dependencyInjection.interfaces;
 
-import collections.generic.ModifiableList;
-import delegates.generic.Func;
+import codeislive63.collections.generic.ModifiableList;
+import codeislive63.delegates.generic.Func;
 import dependencyInjection.ServiceDescriptor;
 
 /**

@@ -1,14 +1,14 @@
 package dependencyInjection.implementations;
 
-import collections.generic.Enumerator;
-import collections.generic.List;
-import delegates.generic.Func;
+import codeislive63.collections.generic.Enumerator;
+import codeislive63.collections.generic.List;
+import codeislive63.delegates.generic.Func;
 import dependencyInjection.ServiceDescriptor;
 import dependencyInjection.ServiceLifetime;
 import dependencyInjection.interfaces.ServiceCollection;
 import dependencyInjection.interfaces.ServiceProvider;
 import dependencyInjection.interfaces.ServiceScope;
-import jenumerable.JEnumerable;
+import codeislive63.jenumerable.JEnumerable;
 
 /**
  * Базовая реализация интерфейса {@link ServiceCollection}.

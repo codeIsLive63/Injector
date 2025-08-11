@@ -1,6 +1,6 @@
 package dependencyInjection.implementations;
 
-import collections.generic.List;
+import codeislive63.collections.generic.List;
 import dependencyInjection.ServiceDescriptor;
 import dependencyInjection.ServiceLifetime;
 import dependencyInjection.annotations.Inject;

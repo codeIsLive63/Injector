@@ -1,6 +1,6 @@
 package dependencyInjection.interfaces;
 
-import collections.generic.Enumerable;
+import codeislive63.collections.generic.Enumerable;
 
 /**
  * Интерфейс, представляющий провайдера сервисов для конфигурации зависимостей.

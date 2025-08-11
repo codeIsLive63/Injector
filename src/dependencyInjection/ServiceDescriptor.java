@@ -1,6 +1,6 @@
 package dependencyInjection;
 
-import delegates.generic.Func;
+import codeislive63.delegates.generic.Func;
 import dependencyInjection.interfaces.ServiceProvider;
 
 /**

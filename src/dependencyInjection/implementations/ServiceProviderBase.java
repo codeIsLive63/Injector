@@ -1,8 +1,8 @@
 package dependencyInjection.implementations;
 
-import collections.generic.Enumerable;
-import collections.generic.List;
-import delegates.generic.Func;
+import codeislive63.collections.generic.Enumerable;
+import codeislive63.collections.generic.List;
+import codeislive63.delegates.generic.Func;
 import dependencyInjection.ServiceDescriptor;
 import dependencyInjection.annotations.Inject;
 import dependencyInjection.interfaces.ServiceProvider;
